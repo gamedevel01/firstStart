@@ -1,5 +1,5 @@
 from base_reacter import BaseReacter
-from telebot import TeleBot
+from telebot import TeleBot, types
 import urllib
 
 
@@ -8,7 +8,12 @@ class TelegramBot(TeleBot):
         super().__init__(token)
         
         @self.message_handler(content_types=['text'])
-        def send_answer(message):
+        def send_answer_text(message : types.Message):
+            print(type(message))
+            self.send_answer(message)
+        @self.message_handler(content_types=['photo'])
+        def send_answer_photo(message : types.Message):
+            print(type(message))
             self.send_answer(message)
 
     @staticmethod
@@ -22,7 +27,7 @@ class TelegramBot(TeleBot):
             with open(path, 'rb') as img:
                 super().send_photo(chat_id, img, caption=caption)
 
-    def send_answer(self, message):
+    def send_answer(self, message : types.Message):
         for reacter in BaseReacter.reacters:
             if reacter.need_react(message):
                 reacter.reaction(message, self)
